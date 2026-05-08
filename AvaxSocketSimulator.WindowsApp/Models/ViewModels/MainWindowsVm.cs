@@ -49,14 +49,15 @@ namespace AvaxSocketSimulator.WindowsApp.Models.ViewModels
         public bool IsProcessing
         {
             get { return _isProcessing; }
-            set { _isProcessing = value; OnPropertyChanged(nameof(IsProcessing)); }
+            set { _isProcessing = value; OnPropertyChanged(nameof(IsProcessing)); OnPropertyChanged(nameof(ProcessStatus)); }
         }
 
+        public bool ProcessStatus => !IsProcessing;
 
         public bool IsValid() => 
             !string.IsNullOrEmpty(DataType) &&
             !string.IsNullOrEmpty(WebServerAddress) &&
             !string.IsNullOrEmpty(DelayTime) &&
-            int.TryParse(DelayTime, out int _);
+            int.TryParse(DelayTime, out _);
     }
 }

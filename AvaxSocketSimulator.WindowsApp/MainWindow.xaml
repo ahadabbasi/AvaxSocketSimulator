@@ -78,6 +78,7 @@
                 <ColumnDefinition Width="0.25*" />
             </Grid.ColumnDefinitions>
             <Button 
+                IsEnabled="{Binding Path=ProcessStatus, Mode=OneWay}"
                 Grid.Column="1"
                 Content="Start to Send" 
                 FontSize="16" 

@@ -1,7 +1,7 @@
-﻿using AvaxSocketSimulator.WindowsApp.Models.Domains;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration;
+using AvaxSocketSimulator.WindowsApp.Models.Domains;
 
 namespace AvaxSocketSimulator.WindowsApp.Models.Persistence
 {

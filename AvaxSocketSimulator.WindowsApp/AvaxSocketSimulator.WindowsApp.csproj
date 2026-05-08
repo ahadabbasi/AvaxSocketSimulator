@@ -68,6 +68,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="DeviceWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -75,6 +79,9 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DeviceWindow.xaml.cs">
+      <DependentUpon>DeviceWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -85,9 +92,14 @@
     <Compile Include="Models\Domains\Packet.cs" />
     <Compile Include="Models\Persistence\ApplicationContext.cs" />
     <Compile Include="Models\Persistence\DatabaseConnection.cs" />
+    <Compile Include="Models\Services\TaskPoolService.cs" />
+    <Compile Include="Models\ViewModels\DeviceWindowsVm.cs" />
+    <Compile Include="Models\ViewModels\FetchCountVm.cs" />
+    <Compile Include="Models\ViewModels\FetchDataVm.cs" />
     <Compile Include="Models\ViewModels\FetchVm.cs" />
     <Compile Include="Models\ViewModels\MainWindowsVm.cs" />
     <Compile Include="Models\ViewModels\RequestVm.cs" />
+    <Compile Include="Models\Services\SocketServerService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

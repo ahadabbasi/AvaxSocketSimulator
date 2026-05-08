@@ -4,25 +4,17 @@ namespace AvaxSocketSimulator.WindowsApp.Models.Persistence
 {
     public class DatabaseConnection
     {
-
         private static DatabaseConnection _instance;
 
-        public static DatabaseConnection Instance()
-        {
-            if (_instance == null)
-            {
-                _instance = new DatabaseConnection();
-            }
-
-            return _instance;
-        }
+        public static DatabaseConnection Instance() => 
+            _instance ?? (_instance = new DatabaseConnection());
 
 
         private readonly SqlConnectionStringBuilder _builder;
 
         private DatabaseConnection() 
         {
-            _builder = new SqlConnectionStringBuilder()
+            _builder = new SqlConnectionStringBuilder
             {
                 DataSource = ".\\SQLEXPRESS",
                 InitialCatalog = "AvaxPositionSocketSystem",
@@ -33,9 +25,7 @@ namespace AvaxSocketSimulator.WindowsApp.Models.Persistence
         }
 
 
-        public string ConnectionString()
-        {
-            return _builder.ConnectionString;
-        }
+        public string ConnectionString() => 
+            _builder.ConnectionString;
     }
 }

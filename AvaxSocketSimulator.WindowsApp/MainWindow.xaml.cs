@@ -1,7 +1,4 @@
-﻿using AvaxSocketSimulator.WindowsApp.Models.Persistence;
-using AvaxSocketSimulator.WindowsApp.Models.ViewModels;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -9,6 +6,9 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using AvaxSocketSimulator.WindowsApp.Models.Persistence;
+using AvaxSocketSimulator.WindowsApp.Models.ViewModels;
+using Newtonsoft.Json;
 
 namespace AvaxSocketSimulator.WindowsApp
 {
@@ -22,11 +22,11 @@ namespace AvaxSocketSimulator.WindowsApp
         {
             InitializeComponent();
 
-            _dataVm = new MainWindowsVm()
+            _dataVm = new MainWindowsVm
             {
                 DataType = "LocationData",
-                DelayTime = "60000",
-                WebServerAddress = "https://localhost:44392/api/history"
+                DelayTime = "1000",
+                WebServerAddress = "https://localhost:44392/api/concox/history"
             };
 
             DataContext = _dataVm;
@@ -42,6 +42,7 @@ namespace AvaxSocketSimulator.WindowsApp
 
                     using (ApplicationContext context = new ApplicationContext())
                     {
+
                         IEnumerable<Guid> data =
                             await context.Packets.Where(item => item.Type == _dataVm.DataType)
                                 .OrderBy(item => item.Inserted)
@@ -54,7 +55,7 @@ namespace AvaxSocketSimulator.WindowsApp
                             {
                                 FetchVm sendItem =
                                     await context.Packets.Where(packet => packet.Id == item)
-                                        .Select(packet => new FetchVm() { Imei = packet.Imei, Data = packet.Data })
+                                        .Select(packet => new FetchVm { Imei = packet.Imei, Data = packet.Data })
                                         .FirstOrDefaultAsync();
 
                                 if (sendItem != null)
@@ -63,7 +64,7 @@ namespace AvaxSocketSimulator.WindowsApp
                                     {
                                         string contentSerialize =
                                             JsonConvert.SerializeObject(
-                                                sendItem,
+                                                new RequestVm(sendItem),
                                                 Formatting.Indented
                                             );
 
@@ -88,9 +89,8 @@ namespace AvaxSocketSimulator.WindowsApp
 
                                                     using (HttpResponseMessage response = await client.SendAsync(request))
                                                     {
-                                                        contentSerialize = await response.Content.ReadAsStringAsync();
-
-                                                        if(response.IsSuccessStatusCode)
+                                                        string responseContent = await response.Content.ReadAsStringAsync();
+                                                        if (response.IsSuccessStatusCode)
                                                         {
                                                             Console.WriteLine("");
                                                         }
@@ -99,7 +99,7 @@ namespace AvaxSocketSimulator.WindowsApp
                                             }
                                         }
                                     }
-                                    catch (Exception exception)
+                                    catch
                                     {
                                         //
                                     }
@@ -115,6 +115,40 @@ namespace AvaxSocketSimulator.WindowsApp
                     _dataVm.IsProcessing = false;
                 });
             }
+        }
+
+
+        private async Task<IEnumerable<IEnumerable<Guid>>> GenerateBatches()
+        {
+            IList<IEnumerable<Guid>> result = new List<IEnumerable<Guid>>();
+
+            using (ApplicationContext context = new ApplicationContext())
+            {
+                IEnumerable<Guid> data =
+                    await context.Packets.Where(item => item.Type == _dataVm.DataType)
+                        .OrderBy(item => item.Inserted)
+                        .Select(item => item.Id)
+                        .ToListAsync();
+                /*
+                IEnumerable<IEnumerable<Guid>> batches = data
+                    .Select((item, index) => new { item, index })
+                    .GroupBy(x => x.index / 10)
+                    .Select(g => g.Select(x => x.item));
+                */
+
+                const int sizeOfBatch = 20;
+
+                int totalBatches = (int)Math.Ceiling((double)data.Count() / sizeOfBatch);
+
+                for (int page = 1; page <= totalBatches; page++)
+                {
+                    result.Add(
+                        data.Skip((page - 1) * sizeOfBatch).Take(sizeOfBatch)
+                    );
+                }
+            }
+
+            return result;
         }
     }
 }
